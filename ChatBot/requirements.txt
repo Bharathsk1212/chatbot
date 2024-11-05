@@ -1,0 +1,17 @@
+flask~=3.0.3
+transformers~=4.45.2
+torch~=2.4.1
+wikipedia~=1.4.0
+torchvision~=0.19.1
+google~=3.0.0
+protobuf~=5.28.2
+pillow~=10.4.0
+pip~=24.2
+Jinja2~=3.1.4
+requests~=2.32.3
+fuzzywuzzy~=0.18.0
+wheel~=0.44.0
+beautifulsoup4~=4.12.3
+attrs~=24.2.0
+PySocks~=1.7.1
+selenium~=4.26.1

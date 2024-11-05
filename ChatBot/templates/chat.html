@@ -1,0 +1,302 @@
+<!-- Chatbot with Speech Recognition and Image Upload -->
+<link href="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css" />
+<script src="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chatbot</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css"
+        integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous" />
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.5.0/css/all.css"
+        integrity="sha384-B4dIYHKNBt8Bc12p+WXckhzcICo0wtJAoU8YZTY5qE0Id1GSseTk6S+L3BlXeVIU" crossorigin="anonymous" />
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <style>
+        button {
+            background-color: #FF0000;
+            color: #FFFFFF; /* White
+            border: none; /* No border */
+            padding: 8px 15px;
+            font-size: 14px; /* Larger font size for readability */
+            border-radius: 8px; /* Rounded corners */
+            cursor: pointer;
+            margin: 5px;
+            transition: background-color 0.3s ease; /* Smooth transition */
+        }
+
+        button:hover {
+            background-color: #CC0000; /* Darker red on hover */
+        }
+        /* Full-page background image */
+            body {
+                background-image: url('/static/img_1.png');
+                background-size: cover;
+                background-position: center;
+                background-repeat: no-repeat;
+                margin: 0;
+                padding: 0;
+                height: 100vh;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+            }
+        
+        
+        img.user_img_msg {
+            max-width: 40px;
+            max-height: 40px;
+            border-radius: 50%;
+        }
+
+        .uploaded-image {
+            max-width: 200px;
+        }
+
+        .msg_time_send,
+        .msg_time {
+            font-size: 10px;
+            color: #FFFFFF;
+            margin-left: 10px;
+        }
+
+        .chat {
+            position: fixed;
+            bottom: 0;
+            right: 20px;
+            width: 320px;
+            max-width: 100%;
+            z-index: 9999;
+            border-radius: 10px;
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .card {
+            border-radius: 10px;
+        }
+
+        @media screen and (max-width: 576px) {
+            .chat {
+                width: 100%;
+                right: 0;
+                bottom: 0;
+            }
+        }
+
+        .msg_cotainer_send,
+        .msg_cotainer {
+            max-width: 70%;
+            padding: 10px;
+            border-radius: 10px;
+            margin-bottom: 10px;
+            word-wrap: break-word;
+        }
+
+        .msg_cotainer_send {
+            background-color: #FF0000;
+            color: #FFFFFF; /* White text color */
+        }
+
+        .msg_cotainer {
+            background-color: #ebebeb;
+            color: black;
+        }
+
+        .typing-indicator {
+            color: gray;
+            font-style: italic;
+        }
+
+        .img_cont_msg img {
+            max-width: 40px;
+            max-height: 40px;
+            border-radius: 50%;
+        }
+    </style>
+</head>
+    <div class="container-fluid h-100">
+        <div class="row justify-content-center h-100">
+            <div class="chat" style="position: fixed; bottom: 0; right: 0; z-index: 1000; width: 100%; max-width: 370px;">
+                <div class="card" style="border: 2px solid #FF0000; border-radius: 20px;">
+                    <div class="card-header msg_head"
+                        style="border-radius: 20px 20px 0 0; background-image: url('https://i.ytimg.com/vi/3aV9VuBe1yA/hq720.jpg?sqp=-oaymwEhCK4FEIIDSFryq4qpAxMIARUAAAAAGAElAADIQj0AgKJD&rs=AOn4CLD6Q05XKBvpleBqPPDUrpSHfa-3BQ'); background-size: cover; background-position: 20% center; border-bottom: 2px solid #FF0000; padding: 10px; height: 80px; display: flex; justify-content: flex-start; align-items: center;">
+                    </div>
+
+                    <div id="messageFormeight" class="card-body msg_card_body"
+                        style="max-height: 450px; overflow-y: auto; padding: 10px; background-size: cover; background-position: center;">
+                    </div>
+
+                    <div class="card-footer"
+                        style="border-radius: 0 0 20px 20px; border-top: 2px solid #FF0000;">
+                        <form id="messageArea" class="input-group">
+                            <input type="text" id="text" name="msg" placeholder="Type your message..." autocomplete="off" class="form-control type_msg" required />
+                            <div class="input-group-append">
+                                <button type="button" id="mic" class="input-group-text" onclick="startSpeechRecognition()">
+                                    <i class="fas fa-microphone"></i>
+                                </button>
+                                <button type="submit" id="send" class="input-group-text send_btn">
+                                    <i class="fas fa-location-arrow"></i>
+                                </button>
+                                <button type="button" class="input-group-text" onclick="document.getElementById('imageUpload').click();">
+                                    <i class="fas fa-image"></i>
+                                </button>
+                            </div>
+                        </form>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+<!--    <div id="chat-container" class="chat">-->
+<!--        <!-- Chat content goes here -->-->
+<!--    </div>-->
+        
+    <script>
+        function scrollToBottom() {
+            var messageBody = document.getElementById("messageFormeight");
+            messageBody.scrollTop = messageBody.scrollHeight;
+        }
+
+        function sendMessage(message) {
+            $("#text").val(message); // Set the input field value to the button message
+            $("#messageArea").submit(); // Trigger the form submission
+        }
+        
+        function typingIndicator(show) {
+            if (show) {
+                $("#messageFormeight").append(
+                    '<div class="typing-indicator" id="typingIndicator">Chatbot is typing...</div>'
+                );
+            } else {
+                $("#typingIndicator").remove();
+            }
+            scrollToBottom();
+        }
+
+        $(document).ready(function () {
+            function loadInitialOptions() {
+                $.post("/get", { msg: "" }, function (data) {
+                    const botHtml =
+                        '<div class="d-flex justify-content-start mb-4"><div class="img_cont_msg"><img src="https://cdn-icons-png.flaticon.com/512/999/999104.png" class="rounded-circle user_img_msg" style="width: 50px; height: 50px; object-fit: cover;"></div><div class="msg_cotainer">' +
+                        data +
+                        '<span class="msg_time">' + new Date().toLocaleTimeString() + '</span></div></div>';
+                    $("#messageFormeight").append($.parseHTML(botHtml));
+                    scrollToBottom();
+                });
+            }
+
+            loadInitialOptions();
+
+            $("#messageArea").on("submit", function (event) {
+                event.preventDefault();
+                const date = new Date();
+                const hour = date.getHours();
+                const minute = date.getMinutes();
+                const str_time = hour + ":" + (minute < 10 ? "0" + minute : minute);
+                var rawText = $("#text").val().trim();
+
+                if (!rawText) {
+                    alert("Please enter a message before sending!");
+                    return;
+                }
+
+                var userHtml =
+                    '<div class="d-flex justify-content-end mb-4"><div class="msg_cotainer_send">' +
+                    rawText +
+                    '<span class="msg_time_send">' + str_time + '</span></div><div class="img_cont_msg"><img src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEg041J49xFxE5TxnfZEkobnebl-ofFmOzDUNz2UB-SJNxE18DN0dFsr4qe83c4GCrjf-dH_UIAPkAqDdlC_DalQmsDwoUf2-_RgSFf2W8IQWSZz3wOMJjn6THy6Va31tHthwepx4XmzvKazh3-kBwLj7cgv0HUJNKOT2l-rJiY-2O_PwCrDY2u7pXfk6w/s1600/Logo%20with%20tech%20coins%20red%20GS.png" class="rounded-circle user_img_msg" style="width: 50px; height: 50px; object-fit: cover;"></div></div>';
+
+                $("#text").val("");
+                $("#messageFormeight").append(userHtml);
+                scrollToBottom();
+                typingIndicator(true);
+
+                setTimeout(function () {
+                    $.post("/get", { msg: rawText }, function (data) {
+                        typingIndicator(false);
+                        const botHtml =
+                            '<div class="d-flex justify-content-start mb-4"><div class="img_cont_msg"><img src="https://cdn-icons-png.flaticon.com/512/999/999104.png" class="rounded-circle user_img_msg" style="width: 50px; height: 50px; object-fit: cover;"></div><div class="msg_cotainer">' +
+                            data +
+                            '<span class="msg_time">' + str_time + '</span></div></div>';
+                        $("#messageFormeight").append($.parseHTML(botHtml));
+                        scrollToBottom();
+                    });
+                }, 1000);
+            });
+
+            $("#imageUpload").on("change", function () {
+                const file = this.files[0];
+                if (file) {
+                    const formData = new FormData();
+                    formData.append("image", file);
+
+                    const date = new Date();
+                    const hour = date.getHours();
+                    const minute = date.getMinutes();
+                    const str_time = hour + ":" + (minute < 10 ? "0" + minute : minute);
+
+                    const userHtml =
+                        '<div class="d-flex justify-content-end mb-4"><div class="msg_cotainer_send">Image sent<span class="msg_time_send">' + str_time + '</span></div><div class="img_cont_msg"><img src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEg041J49xFxE5TxnfZEkobnebl-ofFmOzDUNz2UB-SJNxE18DN0dFsr4qe83c4GCrjf-dH_UIAPkAqDdlC_DalQmsDwoUf2-_RgSFf2W8IQWSZz3wOMJjn6THy6Va31tHthwepx4XmzvKazh3-kBwLj7cgv0HUJNKOT2l-rJiY-2O_PwCrDY2u7pXfk6w/s1600/Logo%20with%20tech%20coins%20red%20GS.png" class="rounded-circle user_img_msg" style="width: 50px; height: 50px; object-fit: cover;"></div></div>';
+                    $("#messageFormeight").append(userHtml);
+                    scrollToBottom();
+                    typingIndicator(true);
+
+                    $.ajax({
+                        url: "/upload",
+                        type: "POST",
+                        data: formData,
+                        processData: false,
+                        contentType: false,
+                        success: function (response) {
+                            typingIndicator(false);
+                            const botHtml =
+                                '<div class="d-flex justify-content-start mb-4"><div class="img_cont_msg"><img src="https://cdn-icons-png.flaticon.com/512/999/999104.png" class="rounded-circle user_img_msg" style="width: 50px; height: 50px; object-fit: cover;"></div><div class="msg_cotainer">' +
+                                response +
+                                '<span class="msg_time">' + str_time + '</span></div></div>';
+                            $("#messageFormeight").append($.parseHTML(botHtml));
+                            scrollToBottom();
+                        },
+                        error: function (jqXHR, textStatus, errorThrown) {
+                            typingIndicator(false);
+                            alert("An error occurred while uploading the image: " + errorThrown);
+                        },
+                    });
+                }
+            });
+        });
+
+        // Speech recognition functionality
+        var recognition;
+        if (window.SpeechRecognition || window.webkitSpeechRecognition) {
+            recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
+            recognition.continuous = false;
+            recognition.lang = "en-US";
+
+            recognition.onresult = function (event) {
+                var speechResult = event.results[0][0].transcript;
+                document.getElementById("text").value = speechResult;
+            };
+
+            recognition.onerror = function (event) {
+                console.error("Speech recognition error:", event.error);
+            };
+        } else {
+            console.warn("Speech recognition is not supported in this browser.");
+        }
+
+        function startSpeechRecognition() {
+            if (recognition) {
+                recognition.start();
+            } else {
+                alert("Speech recognition is not supported in this browser.");
+            }
+        }
+    </script>
+    
+</body>
+
+</html>
